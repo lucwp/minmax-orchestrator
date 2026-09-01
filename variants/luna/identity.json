@@ -1,0 +1,7 @@
+{
+  "skill_name": "minmax-orchestrator-luna",
+  "display_name": "MinMax Orchestrator Luna",
+  "upstream_skill_name": "minmax-orchestrator-next",
+  "upstream_display_name": "MinMax Orchestrator NEXT",
+  "behavioral_delta": false
+}

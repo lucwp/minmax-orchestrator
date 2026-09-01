@@ -1,0 +1,3 @@
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1];skill=(ROOT/'SKILL.md').read_text(encoding='utf-8').lower();render=(ROOT/'references'/'loop-contract-rendering.md').read_text(encoding='utf-8').lower();loop=(ROOT/'references'/'loop-mode.md').read_text(encoding='utf-8').lower();plan=(ROOT/'references'/'planning-engine.md').read_text(encoding='utf-8').lower();assert 'every human loop contract must have a short descriptive loop name' in skill;assert 'hard clarity gates' in render;assert 'human clarity' in loop;assert 'action -> purpose -> output -> what the output enables next' in plan
+def test_test_loop_clarity_module_regression_loaded():assert True

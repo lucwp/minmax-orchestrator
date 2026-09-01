@@ -1,0 +1,40 @@
+name: Sync Luna from NEXT
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'minmax-orchestrator-next/**'
+      - 'variants/luna/**'
+      - 'tools/materialize_luna.py'
+      - 'shared/luna-deltas.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test runner
+        run: python -m pip install pytest
+      - name: Materialize Luna
+        run: python tools/materialize_luna.py
+      - name: Validate both distributions
+        run: python tools/validate_all.py
+      - name: Commit generated Luna if changed
+        run: |
+          if git diff --quiet -- minmax-orchestrator-luna; then
+            echo 'Luna already synchronized.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add minmax-orchestrator-luna
+          git commit -m 'Sync Luna from NEXT'
+          git push
