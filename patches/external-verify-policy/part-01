@@ -1,0 +1,70 @@
++For load-bearing external-world claims, acquire authoritative or tool-grounded external evidence when reasonably available before returning terminal PASS. If it is unavailable, narrow the claim or return `UNCERTAIN` with the evidence limitation; do not substitute model memory, executor self-report, or same-model agreement.
+ 
+ Return:
+ - `PASS | FAIL | UNCERTAIN`;
+ - criterion evaluated;
+ - discriminating evidence;
+-- evidence/feedback provenance;
++- truth domain plus evidence/feedback provenance;
+ - evidence strength or limitation;
+ - whether the result is local, cycle/chunk, or terminal;
+ - exact failing criterion.
+diff --git a/minmax-orchestrator-next/references/loop-mode.md b/minmax-orchestrator-next/references/loop-mode.md
+index 5c250b9..0aa5837 100644
+--- a/minmax-orchestrator-next/references/loop-mode.md
++++ b/minmax-orchestrator-next/references/loop-mode.md
+@@ -228,16 +228,18 @@ Progress requires material new evidence/state: verified artifact/state change, c
+ 
+ ### Feedback provenance
+ 
+-Prefer cycle feedback in this order when applicable:
++Prefer cycle feedback using the evidence source that matches the claim, with this default order when applicable:
+ 
+ 1. deterministic test;
+ 2. authoritative state;
+ 3. transaction receipt;
+-4. external/tool-grounded evidence;
+-5. independent reviewer;
+-6. same-model semantic feedback.
++4. authoritative external evidence;
++5. other tool-grounded external evidence;
++6. independent reviewer;
++7. bounded semantic judgment with explicit criteria;
++8. same-model semantic feedback.
+ 
+-Same-model semantic feedback is auxiliary only. It may propose hypotheses or candidate repairs, but it cannot be sole terminal evidence, independently elevate confidence, or justify repeated repair without an actionable grounded delta.
++Same-model semantic feedback is auxiliary only. It may propose hypotheses or candidate repairs, but it cannot be sole terminal evidence, independently elevate confidence, or justify repeated repair without an actionable grounded delta. For a load-bearing external-world claim, authoritative/tool-grounded external evidence is required before terminal PASS whenever reasonably available. If it is unavailable, narrow the claim or record `UNCERTAIN` plus the evidence limitation; model memory or self-agreement is not a substitute.
+ 
+ ### Iteration Utility Gate
+ 
+@@ -329,6 +331,7 @@ Before asking for approval verify:
+ - terminal evidence is sufficiently independent;
+ - proxy-hardening is adequate;
+ - feedback provenance is explicit;
++- each load-bearing criterion has a matching truth domain/evidence source; external-world claims use authoritative/tool-grounded external evidence when reasonably available;
+ - same-model feedback cannot become terminal authority;
+ - changed-strategy and no-progress limits are consistent with hard budgets;
+ - evidence ledger is incremental for long-horizon work.
+diff --git a/minmax-orchestrator-next/references/verification-evidence.md b/minmax-orchestrator-next/references/verification-evidence.md
+new file mode 100644
+index 0000000..d91fb20
+--- /dev/null
++++ b/minmax-orchestrator-next/references/verification-evidence.md
+@@ -0,0 +1,99 @@
++# Verification Evidence Policy
++
++## Purpose
++
++Match the verification method to the kind of truth being claimed. Verification is strongest when the evidence source is structurally capable of disproving the claim, not merely when another model agrees with it.
++
++Core rule:
++
++`claim type -> strongest reasonably available matching evidence`
++
++Do not use model knowledge, executor self-report, or same-model semantic judgment as a substitute for direct external evidence when the claim is about the external world and such evidence is reasonably available.
++
++## Truth domains and preferred evidence
++
++| Truth domain | Preferred evidence |
++| --- | --- |
++| deterministic artifact/result | deterministic test, assertion, schema, compiler, render check |
