@@ -7,8 +7,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "minmax-orchestrator-luna"
-DST = ROOT / "minmax-orchestrator-sonnet-5"
-VARIANT = ROOT / "variants" / "sonnet-5"
+DST = ROOT / "minmax-orchestrator-sonnet"
+VARIANT = ROOT / "variants" / "sonnet"
 IDENTITY = json.loads((VARIANT / "identity.json").read_text(encoding="utf-8"))
 
 
@@ -36,7 +36,7 @@ def main() -> int:
 
     replace_required(DST / "SKILL.md", [
         (f"name: {luna_slug}", f"name: {sonnet_slug}"),
-        ('description: "Luna-specific workspace-level manager/orchestrator', 'description: "Claude Sonnet 5-specific workspace-level manager/orchestrator'),
+        ('description: "Luna-specific workspace-level manager/orchestrator', 'description: "Claude Sonnet-specific workspace-level manager/orchestrator'),
         (f"# {luna_name}", f"# {sonnet_name}"),
         ('- Model selection/escalation -> `references/model-routing.md`.', '- Anthropic model selection, effort calibration, advisor use, or escalation -> `references/model-routing.md`.'),
     ])
@@ -105,9 +105,9 @@ Do not claim model routing, effort control, Advisor use, or model switching occu
 
     skill_text = skill.read_text(encoding="utf-8")
     if f"name: {sonnet_slug}" not in skill_text or f"# {sonnet_name}" not in skill_text:
-        raise SystemExit("FAIL: Sonnet 5 identity was not materialized")
+        raise SystemExit("FAIL: Sonnet identity was not materialized")
 
-    print("PASS: materialized Sonnet 5 from stable Luna baseline plus Anthropic deltas")
+    print("PASS: materialized Sonnet from stable Luna baseline plus Anthropic deltas")
     return 0
 
 

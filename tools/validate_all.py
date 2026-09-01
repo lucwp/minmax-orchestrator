@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DISTRIBUTIONS = [
     ROOT / "minmax-orchestrator-next",
     ROOT / "minmax-orchestrator-luna",
-    ROOT / "minmax-orchestrator-sonnet-5",
+    ROOT / "minmax-orchestrator-sonnet",
 ]
 
 

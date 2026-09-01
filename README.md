@@ -153,23 +153,33 @@ Changes move from NEXT into a model-specific release only after they are conside
 
 ### MinMax Orchestrator Luna
 
-Luna is currently the first stable model-specific release.
+Luna is a stable model-specific release.
 
 Use it when running the Luna model and you want the stable, standalone MinMax Orchestrator distribution. Installing or invoking Orchestrator Luna is enough to select that version; it does not require NEXT to be installed alongside it.
 
 As model-specific behavior is validated, Luna can diverge from NEXT where a different orchestration choice produces a better result for Luna.
 
+### MinMax Orchestrator Sonnet
+
+Sonnet is the stable Anthropic release.
+
+Use it with the Claude Sonnet family when you want a standalone Orchestrator calibrated for Anthropic's efficiency-to-capability trade-offs. Sonnet remains the default substantive workhorse while the Orchestrator can route bounded work down to Haiku or escalate narrow, load-bearing nodes to Opus or frontier models when the runtime exposes those controls and the expected benefit justifies the cost.
+
+The release name is intentionally **Sonnet**, not tied to a specific model version. The routing policy can track the current stable Claude Sonnet generation without changing the Skill's public identity every time Anthropic updates the model family.
+
+Like every model-specific release, Orchestrator Sonnet is self-contained at runtime and does not require NEXT, Luna, persistent memory, a profile switch, or repository support files.
+
 ```text
-MinMax Orchestrator NEXT
-experimental laboratory
-        ↓
-validated model-specific promotion
-        ↓
-MinMax Orchestrator Luna
-stable standalone release
+                    MinMax Orchestrator NEXT
+                    experimental laboratory
+                              ↓
+                 validated model-specific promotion
+                         ↙             ↘
+       MinMax Orchestrator Luna     MinMax Orchestrator Sonnet
+       stable standalone release    stable standalone release
 ```
 
-Future model-specific distributions should follow the same separation: experimentation happens in NEXT; stable, dependency-free releases are named for the model they are designed to orchestrate.
+Future model-specific distributions follow the same separation: experimentation happens in NEXT; stable, dependency-free releases are named for the model family they are designed to orchestrate.
 
 ## What the orchestrator will not do
 

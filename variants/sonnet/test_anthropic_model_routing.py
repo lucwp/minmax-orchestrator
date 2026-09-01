@@ -5,8 +5,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_sonnet_identity():
     text = (ROOT / "SKILL.md").read_text(encoding="utf-8")
-    assert "name: minmax-orchestrator-sonnet-5" in text
-    assert "# MinMax Orchestrator Sonnet 5" in text
+    assert "name: minmax-orchestrator-sonnet" in text
+    assert "# MinMax Orchestrator Sonnet" in text
     assert "MinMax Orchestrator Luna" not in text
 
 

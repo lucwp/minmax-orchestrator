@@ -34,3 +34,7 @@ Synchronization is semantic, not blind copying. `variants/<model>/` is the sourc
 ## Runtime independence
 
 No distribution may require `../shared`, `../variants`, another orchestrator folder, Agent Memory, or a persistent profile switch to function. Repository-level tooling may use shared metadata, but packaged Skills must remain self-contained.
+
+## README synchronization
+
+Every repository change requires a README accuracy review. Any change that affects user-visible behavior, supported models, release identity, compatibility, usage, capabilities, limitations, or status must update the root `README.md` in the same change. The README remains client-facing and must not contain private environment or maintainer-only operational context.

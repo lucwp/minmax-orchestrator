@@ -10,7 +10,7 @@ This mode incorporates the load-bearing principles of Max Milian's `loop-enginee
 - Author: Max Milian (`maxmilian`)
 - License: MIT
 
-MinMax Orchestrator Sonnet 5 remains the root control plane for task modeling, feasibility, planning regime, topology, approvals, user-visible communication, directional decision gates, domain-skill authority, side effects, recovery, and final synthesis. During Loop Mode execution, always apply `user-interaction-protocol.md`.
+MinMax Orchestrator Sonnet remains the root control plane for task modeling, feasibility, planning regime, topology, approvals, user-visible communication, directional decision gates, domain-skill authority, side effects, recovery, and final synthesis. During Loop Mode execution, always apply `user-interaction-protocol.md`.
 
 ## Hard lifecycle
 
