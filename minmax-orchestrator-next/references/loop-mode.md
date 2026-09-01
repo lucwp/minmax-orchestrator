@@ -228,16 +228,18 @@ Progress requires material new evidence/state: verified artifact/state change, c
 
 ### Feedback provenance
 
-Prefer cycle feedback in this order when applicable:
+Prefer cycle feedback using the evidence source that matches the claim, with this default order when applicable:
 
 1. deterministic test;
 2. authoritative state;
 3. transaction receipt;
-4. external/tool-grounded evidence;
-5. independent reviewer;
-6. same-model semantic feedback.
+4. authoritative external evidence;
+5. other tool-grounded external evidence;
+6. independent reviewer;
+7. bounded semantic judgment with explicit criteria;
+8. same-model semantic feedback.
 
-Same-model semantic feedback is auxiliary only. It may propose hypotheses or candidate repairs, but it cannot be sole terminal evidence, independently elevate confidence, or justify repeated repair without an actionable grounded delta.
+Same-model semantic feedback is auxiliary only. It may propose hypotheses or candidate repairs, but it cannot be sole terminal evidence, independently elevate confidence, or justify repeated repair without an actionable grounded delta. For a load-bearing external-world claim, authoritative/tool-grounded external evidence is required before terminal PASS whenever reasonably available. If it is unavailable, narrow the claim or record `UNCERTAIN` plus the evidence limitation; model memory or self-agreement is not a substitute.
 
 ### Iteration Utility Gate
 
@@ -329,6 +331,7 @@ Before asking for approval verify:
 - terminal evidence is sufficiently independent;
 - proxy-hardening is adequate;
 - feedback provenance is explicit;
+- each load-bearing criterion has a matching truth domain/evidence source; external-world claims use authoritative/tool-grounded external evidence when reasonably available;
 - same-model feedback cannot become terminal authority;
 - changed-strategy and no-progress limits are consistent with hard budgets;
 - evidence ledger is incremental for long-horizon work.

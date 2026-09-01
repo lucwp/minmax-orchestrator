@@ -2,7 +2,7 @@
 
 ## Root Manager
 
-Root owns user intent, Task Model, feasibility/affordance classification, planning-regime selection, execution topology, global constraints, approvals, user-visible communication, conflict resolution, authoritative-state verification, and final synthesis. Root is the only public voice during managed execution; follow `user-interaction-protocol.md`.
+Root owns user intent, Task Model, feasibility/affordance classification, planning-regime selection, execution topology, global constraints, approvals, user-visible communication, conflict resolution, claim-to-evidence matching, authoritative-state/external verification, and final synthesis. Root is the only public voice during managed execution; follow `user-interaction-protocol.md`.
 
 ## Planner
 
@@ -20,7 +20,7 @@ Planner receives the smallest sufficient context and returns:
 - material dependencies/preconditions;
 - local adaptation triggers;
 - global replan triggers;
-- completion evidence;
+- completion evidence, including external-world evidence requirements when a load-bearing claim depends on facts outside the runtime;
 - ownership/tool recommendations.
 
 Planner stops after one initial planning pass plus at most one pre-execution repair. It does not execute the task, spawn another planner, continuously self-critique, or treat same-model criticism as proof that its own plan is invalid.
@@ -44,13 +44,15 @@ Return:
 
 ## Verifier
 
-Use a model verifier only when deterministic/authoritative verification is insufficient and failure cost justifies another call.
+Before choosing a verifier, classify the criterion's truth domain and load `verification-evidence.md` for non-trivial cases. Use a model verifier only when direct deterministic, authoritative-state, transaction, or external/tool-grounded evidence is insufficient and failure cost justifies another call.
+
+For load-bearing external-world claims, acquire authoritative or tool-grounded external evidence when reasonably available before returning terminal PASS. If it is unavailable, narrow the claim or return `UNCERTAIN` with the evidence limitation; do not substitute model memory, executor self-report, or same-model agreement.
 
 Return:
 - `PASS | FAIL | UNCERTAIN`;
 - criterion evaluated;
 - discriminating evidence;
-- evidence/feedback provenance;
+- truth domain plus evidence/feedback provenance;
 - evidence strength or limitation;
 - whether the result is local, cycle/chunk, or terminal;
 - exact failing criterion.

@@ -52,6 +52,7 @@ Use the minimum sufficient execution topology that maximizes verified task succe
 31. Before substantive decomposition, run a feasibility and tool-affordance check. Do not compile executable work around unsatisfiable constraints, unavailable required capabilities, or missing information that must be discovered first.
 32. When a sound external planner, solver, compiler, test system, or authoritative verifier can carry the load-bearing formal reasoning, prefer `solver_assisted` planning over unsupported free-form LLM planning.
 33. Same-model self-critique is auxiliary evidence only. It must not be the sole terminal verifier or justify repeated repair cycles without an actionable, externally or independently grounded delta.
+34. **Match evidence to the truth being claimed.** When a load-bearing claim depends on the external world and authoritative/tool-grounded external evidence is reasonably available, obtain that evidence before terminal PASS. Model memory, executor self-report, or same-model judgment cannot substitute for it. If matching evidence is unavailable, narrow the claim or report uncertainty/limitations rather than silently upgrading confidence.
 
 ## Progressive loading
 
@@ -59,6 +60,7 @@ Load only what the selected route needs:
 
 - Route C or complex dependency work -> `references/planning-engine.md`, `references/planning-regimes.md`, and `references/planning-spec-schema.md` when a PlanSpec is required.
 - Any planner/worker/verifier -> `references/assignment-contracts.md`.
+- Any non-trivial verification, especially load-bearing external-world claims -> `references/verification-evidence.md`; use `scripts/validate_evidence_plan.py` when a structured Evidence Plan is practical.
 - Model selection/escalation -> `references/model-routing.md`.
 - Large context, fan-out, or token optimization -> `references/token-economy.md`.
 - Stall, retry, timeout, long-running work -> `references/termination-budgets.md`.
@@ -179,12 +181,17 @@ For delegated work:
 - expose only relevant tools where scoping exists;
 - return condensed worker state, not transcripts.
 
-Verify, when applicable, in this order:
+Verify, when applicable, using the evidence source that matches the claim, with this default preference:
 1. deterministic test/assertion;
 2. authoritative state read;
 3. transaction/tool receipt bound to intended action;
-4. bounded low-cost semantic check;
-5. independent stronger critic only when failure cost justifies it.
+4. authoritative external evidence;
+5. other tool-grounded external evidence;
+6. independent verifier/reviewer when failure cost justifies it;
+7. bounded semantic judgment with explicit criteria;
+8. same-model semantic feedback, auxiliary only.
+
+For a load-bearing external-world claim, obtain current independent evidence from an authoritative external source or grounded tool whenever such evidence is reasonably available. Do not substitute model knowledge, executor self-report, or same-model judgment. If matching evidence cannot reasonably be obtained, narrow the claim or surface the uncertainty/evidence limitation instead of granting terminal PASS. Do not search externally when a deterministic test, authoritative state read, or transaction receipt is the direct source of truth.
 
 In Loop Mode, apply those methods through layered semantics: action verification for the immediate effect, cycle verification for progress/invariants, and independent terminal verification for the global completion condition. Executor self-report is not terminal evidence when a better verifier exists.
 
