@@ -47,12 +47,20 @@ jobs:
                   ('minmax-orchestrator-sonnet-5', 'minmax-orchestrator-sonnet'),
                   ('MinMax Orchestrator Sonnet 5', 'MinMax Orchestrator Sonnet'),
               ],
+              Path('minmax-orchestrator-sonnet/tests/test_anthropic_model_routing.py'): [
+                  ('name: minmax-orchestrator-sonnet-5', 'name: minmax-orchestrator-sonnet'),
+                  ('# MinMax Orchestrator Sonnet 5', '# MinMax Orchestrator Sonnet'),
+              ],
               Path('variants/sonnet/README.md'): [
                   ('# Sonnet 5 Variant', '# Sonnet Variant'),
                   ('MinMax Orchestrator Sonnet 5', 'MinMax Orchestrator Sonnet'),
                   ('minmax-orchestrator-sonnet-5/', 'minmax-orchestrator-sonnet/'),
                   ('Sonnet 5 is derived', 'Sonnet is derived'),
                   ('The Sonnet 5 distribution uses', 'The Sonnet distribution uses'),
+              ],
+              Path('variants/sonnet/test_anthropic_model_routing.py'): [
+                  ('name: minmax-orchestrator-sonnet-5', 'name: minmax-orchestrator-sonnet'),
+                  ('# MinMax Orchestrator Sonnet 5', '# MinMax Orchestrator Sonnet'),
               ],
               Path('tools/materialize_sonnet.py'): [
                   ('minmax-orchestrator-sonnet-5', 'minmax-orchestrator-sonnet'),
