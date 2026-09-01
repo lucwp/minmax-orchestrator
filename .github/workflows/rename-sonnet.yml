@@ -151,6 +151,6 @@ jobs:
           find minmax-orchestrator-next minmax-orchestrator-luna minmax-orchestrator-sonnet -type d -name '.pytest_cache' -prune -exec rm -rf {} +
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A README.md AGENTS.md shared/model-variant-policy.md tools minmax-orchestrator-sonnet minmax-orchestrator-sonnet-5 variants/sonnet variants/sonnet-5
+          git add -A
           git commit -m 'Rename stable Sonnet orchestrator release'
           git push
