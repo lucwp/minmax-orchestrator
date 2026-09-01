@@ -1,5 +1,5 @@
 interface:
-  display_name: MinMax Orchestrator NEXT
+  display_name: MinMax Orchestrator Luna
   short_description: Approval-gated planning, delegation, verification, and Loop Mode
     orchestration.
   icon_small: assets/icon.svg

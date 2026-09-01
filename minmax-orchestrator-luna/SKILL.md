@@ -1,9 +1,9 @@
 ---
-name: minmax-orchestrator-next
-description: "Next-generation workspace-level manager/orchestrator for cost-effective evidence-informed planning, feasibility/affordance checks, planning-regime selection, delegation, verification, user-visible execution progress, decision-rights control, and bounded agentic execution. Apply as a lightweight routing control plane: keep trivial work direct, plan bounded work compactly, delegate only when parallelism/context isolation/specialist capability/risk reduction justify the overhead, preserve domain-skill authority, keep substantive execution visibly understandable, and ask the user before choosing a materially directional preference. When the user explicitly asks to execute the current task with a loop, activate approval-gated Loop Mode and execute no task cycle until the exact contract is approved."
+name: minmax-orchestrator-luna
+description: "Luna-specific workspace-level manager/orchestrator for cost-effective evidence-informed planning, feasibility/affordance checks, planning-regime selection, delegation, verification, user-visible execution progress, decision-rights control, and bounded agentic execution. Apply as a lightweight routing control plane: keep trivial work direct, plan bounded work compactly, delegate only when parallelism/context isolation/specialist capability/risk reduction justify the overhead, preserve domain-skill authority, keep substantive execution visibly understandable, and ask the user before choosing a materially directional preference. When the user explicitly asks to execute the current task with a loop, activate approval-gated Loop Mode and execute no task cycle until the exact contract is approved."
 ---
 
-# MinMax Orchestrator NEXT
+# MinMax Orchestrator Luna
 
 **Author:** Lucas W. Portella
 
