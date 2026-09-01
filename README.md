@@ -129,23 +129,47 @@ If a load-bearing claim depends on facts outside the current environment, the or
 
 If suitable evidence cannot be obtained, the result should be narrowed or reported with the remaining uncertainty instead of being promoted to PASS without support.
 
-## NEXT and Luna
+## Which version should I use?
 
-The repository currently provides two versions.
+MinMax Orchestrator separates experimentation from stable model-specific releases.
 
 ### MinMax Orchestrator NEXT
 
-Use NEXT when you want the main, continuously evolving MinMax Orchestrator architecture.
+NEXT is the laboratory version.
 
-It receives new planning, verification, Loop Mode and orchestration improvements first.
+It is where new orchestration ideas are designed, combined, stress-tested and refined before they are considered stable enough for a model-specific release. New planning mechanisms, verification rules, Loop Mode behavior and other architectural experiments can appear here first and may change as those experiments are evaluated.
+
+Use NEXT when you want to explore the newest MinMax Orchestrator work and are comfortable with an experimental release channel.
+
+Do not assume that every NEXT experiment has already been promoted to a stable distribution.
+
+### Model-specific releases
+
+Versions named after models are the stable release channel.
+
+Each model-specific Orchestrator is a self-contained distribution intended for normal use with that model. It should not depend on NEXT, another Orchestrator, repository support files, persistent memory, a profile switch, or any other MinMax runtime component to function.
+
+Changes move from NEXT into a model-specific release only after they are considered suitable for that model. This allows the stable distributions to keep the parts of the architecture that have earned their place without inheriting every experiment from the laboratory branch.
 
 ### MinMax Orchestrator Luna
 
-Use Luna when you are working with the Luna model and want the model-specific distribution.
+Luna is currently the first stable model-specific release.
 
-Luna is standalone. You do not need NEXT installed alongside it, and you do not need a persistent profile or memory setting to keep it in Luna mode. The Skill itself is the Luna version.
+Use it when running the Luna model and you want the stable, standalone MinMax Orchestrator distribution. Installing or invoking Orchestrator Luna is enough to select that version; it does not require NEXT to be installed alongside it.
 
-At the moment, Luna follows the same behavioral baseline as NEXT. Model-specific behavior can diverge when there is evidence that Luna benefits from different orchestration choices.
+As model-specific behavior is validated, Luna can diverge from NEXT where a different orchestration choice produces a better result for Luna.
+
+```text
+MinMax Orchestrator NEXT
+experimental laboratory
+        ↓
+validated model-specific promotion
+        ↓
+MinMax Orchestrator Luna
+stable standalone release
+```
+
+Future model-specific distributions should follow the same separation: experimentation happens in NEXT; stable, dependency-free releases are named for the model they are designed to orchestrate.
 
 ## What the orchestrator will not do
 
