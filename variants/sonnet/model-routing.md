@@ -1,90 +1,114 @@
-# Anthropic Model Routing for Sonnet 5
+# Anthropic Model Routing for Sonnet
 
 ## Purpose
 
-Keep Claude Sonnet 5 as the default workhorse and spend additional model capability only on nodes where the expected increase in verified task success exceeds the extra token, latency, and coordination cost.
+Optimize for `verified task success / expected total cost` using a **Sonnet-first, effort-first, model-switch-last** policy.
 
-This distribution is calibrated against Anthropic's generally available model lineup as of 2026-09-01. Pricing changes over time; treat the numeric prices below as a dated fallback snapshot, not a live pricing source. When current authoritative pricing is available and routing cost materially matters, prefer the current source.
+Claude Sonnet is the default substantive/root model. Treat supported `effort` levels inside Sonnet as the primary capability ladder. Change models only when a specialized offload or a narrow capability escalation has better expected utility than staying on Sonnet.
 
-## Stable capability ladder
+This distribution is calibrated against Anthropic's generally available model lineup as of 2026-09-01. Pricing changes over time; treat numeric prices below as a dated fallback snapshot, not a live pricing source. When current authoritative pricing is available and routing cost materially matters, prefer the current source.
+
+## Economic roles
 
 | Role | Model | API model | Price snapshot (input/output per MTok) | Default use |
 | --- | --- | --- | ---: | --- |
-| economical worker | Claude Haiku 4.5 | `claude-haiku-4-5` | $1 / $5 | mechanical, high-volume, low-latency, cheaply verified bounded work |
-| default root/workhorse | Claude Sonnet 5 | `claude-sonnet-5` | $2 / $10 | normal substantive work, coding, research, tool use, planning, most agentic loops |
-| premium escalation/advisor | Claude Opus 5 | `claude-opus-5` | $5 / $25 | genuinely hard narrow reasoning, root cause, ambiguous integration, high failure cost |
-| frontier escalation | Claude Fable 5 | `claude-fable-5` | $10 / $50 | exceptional long-horizon/frontier work where Opus is insufficient and the gain is worth ~2x Opus token price |
+| specialized economical offload | Claude Haiku 4.5 | `claude-haiku-4-5` | $1 / $5 | mechanical, high-volume, low-latency, cheaply verified bounded work |
+| default root/workhorse | Claude Sonnet 5 | `claude-sonnet-5` | $2 / $10 | normal substantive work, coding, research, tool use, planning, synthesis, most agentic loops |
+| narrow premium advisor/escalation | Claude Opus 5 | `claude-opus-5` | $5 / $25 | difficult load-bearing reasoning or judgment when Sonnet plus appropriate effort is insufficient or failure cost justifies the premium |
+| exceptional frontier escalation | Claude Fable 5 | `claude-fable-5` | $10 / $50 | rare frontier/long-horizon nodes where Opus is insufficient and the expected lift justifies the additional cost |
 
-Claude Mythos 5 is not part of the normal ladder. It is restricted-access and must never be required for this Skill to function. Use it only when the runtime explicitly exposes authorized access and the user/domain context independently justifies it.
+Claude Mythos 5 is not part of the normal routing policy. It is restricted-access and must never be required for this Skill to function. Use it only when the runtime explicitly exposes authorized access and the user/domain context independently justifies it.
 
-## Routing policy
+These roles are **not** a difficulty staircase. Haiku is not the first reasoning rung, and Opus/Fable are not automatic next steps because a task feels important.
 
-### Stay on Sonnet 5 by default
+## Sonnet effort is the primary ladder
 
-Sonnet 5 is the default because it provides the strongest general efficiency/capability balance for agentic work in the current Anthropic lineup. Keep the root on Sonnet unless there is a concrete reason to move a node.
+Keep substantive work on Sonnet whenever the expected gain from additional Sonnet reasoning is sufficient relative to the expected cost of switching models.
 
-Use Sonnet for:
-- substantive planning and synthesis;
-- ordinary software engineering and debugging;
-- research and tool-driven knowledge work;
-- multi-step agentic execution;
-- most Loop Mode cycles;
-- integration across worker outputs.
+When the runtime exposes supported effort controls, use them conceptually as:
 
-### Route down to Haiku 4.5
+```text
+Sonnet low effort
+        ↓
+Sonnet medium effort
+        ↓
+Sonnet high effort
+        ↓
+Sonnet max effort
+```
 
-Use Haiku when all load-bearing uncertainty is low or externally/deterministically bounded and the work benefits from lower cost or latency. Good examples include:
+Choose the **lowest Sonnet effort that is likely to complete the node reliably**.
+
+Typical policy:
+1. low/medium effort for bounded substantive work with strong observability or cheap verification;
+2. normal/high effort for planning, synthesis, coding, research, ambiguous tool use, and most Loop Mode reasoning;
+3. high/max effort for genuinely difficult load-bearing reasoning when more internal reasoning is likely to resolve the gap;
+4. before changing models, repair missing context, bad scope, wrong tools, and weak verification;
+5. prefer a solver, compiler, test system, authoritative source, or deterministic verifier over buying more model capability when it can carry the load-bearing reasoning more reliably.
+
+Do not escalate effort merely because a project is prestigious or large. Effort is justified by uncertainty, reasoning depth, failure cost, observability, and expected rework.
+
+## Haiku is a specialized offload path
+
+Use Haiku when all load-bearing uncertainty is low or externally/deterministically bounded and lower cost or latency has clear value.
+
+Good candidates include:
 - extraction and normalization;
+- classification with explicit labels and checks;
 - source collection with explicit query/coverage instructions;
 - deterministic transformations;
 - routine formatting;
 - straightforward code edits guarded by strong tests;
-- independent fan-out where each worker has a narrow contract.
+- independent fan-out where each worker has a narrow contract and cheap verification.
 
-Do not send ambiguous strategic decisions, weakly specified research synthesis, or hard planning nodes to Haiku merely to save tokens. If the Haiku worker would need nearly all root context or repeated repairs, keep the work on Sonnet.
+**Haiku is a specialized offload path, not the first reasoning rung.** Do not move a cognitively meaningful node from Sonnet to Haiku merely to save tokens. If Haiku needs nearly all root context, repeated repairs, or substantive synthesis, keep the work on Sonnet.
 
-### Escalate to Opus 5 narrowly
+## Opus is a narrow advisor/escalation
 
-Use Opus only when the failure class points to capability rather than missing context, bad scope, wrong tools, or weak verification. Strong candidates include:
-- a narrow planning problem with material downstream consequences;
-- difficult root-cause analysis after ordinary debugging failed;
+Prefer keeping Sonnet as executor and escalating only the difficult decision or failed/load-bearing node.
+
+Use Opus when the failure class points to capability rather than missing context, bad scope, wrong tools, or weak verification. Strong candidates include:
+- a narrow planning problem with material downstream consequences after Sonnet effort was calibrated appropriately;
+- difficult root-cause analysis after ordinary debugging and stronger Sonnet effort failed;
 - ambiguous integration across several constraints/domains;
 - high-consequence qualitative judgment with no deterministic verifier;
 - a verifier/advisor role where stronger judgment materially reduces expected failure cost.
 
-Prefer escalating one load-bearing node over moving the whole workflow to Opus.
+If Anthropic's Advisor tool is available, **prefer an Opus advisor before replacing Sonnet as the executor** when one bounded consultation can resolve the hard node more cheaply.
 
-### Escalate to Fable 5 exceptionally
+Move a node to Opus execution only when the expected increase in verified success exceeds the incremental token, latency, context-transfer, integration, and verification cost.
 
-Fable is the frontier tier, not the default premium tier. Use it only when at least one is true:
-- Opus 5 failed after context/scope/tool issues were repaired;
-- the node is unusually long-horizon or complex and frontier capability is plausibly decisive;
+## Fable is a last-resort frontier path
+
+Fable is not the default premium tier. Use it only when at least one is true:
+- Opus was insufficient after context/scope/tool issues were repaired;
+- the node is unusually long-horizon or frontier-level and additional capability is plausibly decisive;
 - the cost of an incorrect judgment is high enough that the expected quality lift justifies the price;
-- an independent frontier review materially reduces residual risk.
+- an independent frontier review materially reduces residual risk that cannot be reduced more cheaply.
 
-Fable has stricter safeguards and may fall back on some requests. Do not build a workflow whose correctness depends on Fable being available for every domain.
+Prefer a narrow Fable consultation or isolated load-bearing node over moving the whole workflow. Do not build a workflow whose correctness depends on Fable being available for ordinary work.
 
-## Effort before escalation
+## Effort and thinking controls
 
 Sonnet 5 and Opus 5 use adaptive thinking by default and expose `effort` as the main cost/performance control. Fable 5 always uses adaptive thinking and also responds to effort. Haiku 4.5 does not support the same effort control.
 
-Use effort as an intra-model throttle:
-1. keep routine work at low/medium effort when the runtime exposes it and verification is cheap;
-2. use normal/high effort for substantive Sonnet work;
-3. raise effort on the current model before switching models when the problem is reasoning depth and the expected token cost remains lower than escalation;
-4. do not use xhigh/max or frontier models by default;
-5. if a deterministic solver/test/verifier can carry the hard reasoning, prefer `solver_assisted` over simply raising effort.
+Rules:
+- use supported effort as the first capability throttle on Sonnet;
+- do not automatically switch to Opus because Sonnet low/medium effort struggled;
+- increase Sonnet effort when reasoning depth is the likely bottleneck and expected total cost remains favorable;
+- do not use max effort by default when lower effort plus strong verification is sufficient;
+- if a deterministic solver/test/verifier can carry the hard reasoning, prefer `solver_assisted` over simply raising effort or changing models.
 
 Never use legacy `budget_tokens` instructions for Sonnet 5, Opus 5, or Fable 5. Do not add temperature/top-p tuning as an orchestration mechanism for current Sonnet/Opus/Fable models.
 
 ## Advisor tool
 
-If the runtime exposes Anthropic's Advisor tool, treat it as a narrow capability-escalation primitive. It fits this Orchestrator well because the executor can remain economical while a stronger model advises on one difficult decision.
+If the runtime exposes Anthropic's Advisor tool, treat it as the preferred narrow model-escalation primitive before replacing a capable Sonnet executor.
 
 Preferred patterns:
-- Haiku executor -> Sonnet/Opus advisor for a bounded hard decision;
 - Sonnet executor -> Opus advisor for difficult planning/judgment;
-- Sonnet or Opus executor -> Fable advisor only when frontier lift plausibly matters.
+- Sonnet executor -> Fable advisor only when frontier lift plausibly matters;
+- Haiku executor -> Sonnet/Opus advisor only for a bounded hard decision inside an otherwise mechanical workload.
 
 Rules:
 - the advisor must be at least as capable as the executor;
@@ -105,14 +129,16 @@ Current Claude models are proactive. Avoid legacy scaffolding that repeatedly sa
 
 ## Escalation sequence
 
-Before moving up the ladder:
-1. repair missing context;
-2. tighten the objective/scope;
-3. correct tool selection or tool failures;
-4. strengthen verification;
-5. adjust supported effort if the issue is reasoning depth;
-6. use a narrow advisor if available and sufficient;
-7. escalate only the failed/load-bearing node.
+For a substantive node, use this order:
+1. keep or return the node to Sonnet unless it is clearly mechanical and cheaply verified;
+2. repair missing context;
+3. tighten objective and scope;
+4. correct tool selection or tool failures;
+5. strengthen verification;
+6. raise supported Sonnet effort if reasoning depth is the bottleneck;
+7. use a narrow Opus advisor if available and sufficient;
+8. move only the failed/load-bearing node to Opus when the expected utility is positive;
+9. use Fable only as an exceptional frontier escalation.
 
 `same failure + same model + same strategy = no progress`
 
