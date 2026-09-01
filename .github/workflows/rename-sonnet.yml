@@ -58,7 +58,6 @@ jobs:
                   ('minmax-orchestrator-sonnet-5', 'minmax-orchestrator-sonnet'),
                   ('variants" / "sonnet-5', 'variants" / "sonnet'),
                   ('Claude Sonnet 5-specific workspace-level manager/orchestrator', 'Claude Sonnet-specific workspace-level manager/orchestrator'),
-                  ('MinMax Orchestrator Sonnet 5', 'MinMax Orchestrator Sonnet'),
                   ('Sonnet 5 identity was not materialized', 'Sonnet identity was not materialized'),
                   ('materialized Sonnet 5 from stable Luna baseline plus Anthropic deltas', 'materialized Sonnet from stable Luna baseline plus Anthropic deltas'),
               ],
