@@ -1,0 +1,70 @@
++
++        matching = MATCHING[domain]
++        if available is True and not (types & matching):
++            errors.append(f"{prefix}: reasonably available matching evidence is required for {domain}")
++
++        if domain == "external_world":
++            has_external = bool(types & MATCHING["external_world"])
++            if status == "PASS" and not has_external:
++                errors.append(f"{prefix}: external-world PASS requires authoritative/tool-grounded external evidence")
++            if available is False and not has_external and not limitations:
++                errors.append(f"{prefix}: unavailable external evidence requires an explicit limitation")
++
++        if terminal is True and status == "PASS":
++            non_same_model = types - {"same_model_feedback"}
++            if not non_same_model:
++                errors.append(f"{prefix}: terminal PASS cannot rely only on same-model feedback")
++
++    return errors
++
++
++def main(argv=None):
++    parser = argparse.ArgumentParser(description="Validate claim-to-evidence verification policy")
++    parser.add_argument("plan", type=Path)
++    args = parser.parse_args(argv)
++    try:
++        data = json.loads(args.plan.read_text(encoding="utf-8"))
++    except Exception as exc:
++        print(f"FAIL: invalid JSON: {exc}")
++        return 1
++    errors = validate(data)
++    for error in errors:
++        print("FAIL: " + error)
++    print(f"RESULT: {'FAIL' if errors else 'PASS'} ({len(errors)} errors)")
++    return 1 if errors else 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/minmax-orchestrator-next/tests/test_external_evidence_verification.py b/minmax-orchestrator-next/tests/test_external_evidence_verification.py
+new file mode 100644
+index 0000000..8271923
+--- /dev/null
++++ b/minmax-orchestrator-next/tests/test_external_evidence_verification.py
+@@ -0,0 +1,106 @@
++import importlib.util
++import json
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++SCRIPT = ROOT / "scripts" / "validate_evidence_plan.py"
++spec = importlib.util.spec_from_file_location("validate_evidence_plan", SCRIPT)
++mod = importlib.util.module_from_spec(spec)
++spec.loader.exec_module(mod)
++
++
++def plan(claim):
++    return {"schema_version": "1.0", "claims": [claim]}
++
++
++def evidence(kind, source="source"):
++    item = {"type": kind}
++    if kind != "same_model_feedback":
++        item["source"] = source
++    return item
++
++
++def base_claim(domain, status="PASS", available=True, ev=None, terminal=True, limitations=None):
++    return {
++        "id": "c1",
++        "truth_domain": domain,
