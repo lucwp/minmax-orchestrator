@@ -74,6 +74,10 @@ Planning regime and execution topology are separate decisions. A hierarchical pl
 
 Loop Mode is opt-in.
 
+Writing a useful loop is harder than telling an agent to "keep iterating until it is good". A loop needs a clear objective, a bounded scope, evidence that can distinguish progress from activity, sensible retry and cost limits, explicit decision boundaries, and a reliable way to know when to repair, replan or stop. Getting those pieces right is one of the hardest parts of agentic work, and many users should not have to design that control logic by hand every time.
+
+MinMax Orchestrator handles that work. From the user's intent, it architects the loop, writes the contract, chooses the planning regime and execution topology, defines what counts as progress and PASS, sets budgets and exit conditions, establishes verification and approval boundaries, and manages the loop as execution unfolds.
+
 When a user explicitly asks the orchestrator to execute a task iteratively, it first produces a human-readable contract that freezes the outcome, boundaries, budget, verification strategy and exit conditions. Execution starts only after approval.
 
 A loop is expected to make measurable progress. More reasoning by itself does not count.
