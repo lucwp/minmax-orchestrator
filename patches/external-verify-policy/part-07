@@ -1,0 +1,10 @@
++        text = path.read_text(encoding="utf-8").lower()
++        assert "same-model" in text
++    assert "auxiliary" in (ROOT / "references" / "verification-evidence.md").read_text(encoding="utf-8").lower()
++
++
++def test_reliability_records_claim_evidence_control():
++    reliability = json.loads((ROOT / "reliability.json").read_text(encoding="utf-8"))
++    control = reliability["controls"]["claim_evidence_matching"]
++    assert control["status"] == "implemented"
++    assert "scripts/validate_evidence_plan.py" in control["evidence"]
