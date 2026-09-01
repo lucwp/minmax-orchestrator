@@ -163,7 +163,9 @@ As model-specific behavior is validated, Luna can diverge from NEXT where a diff
 
 Sonnet is the stable Anthropic release.
 
-Use it with the Claude Sonnet family when you want a standalone Orchestrator calibrated for Anthropic's efficiency-to-capability trade-offs. Sonnet remains the default substantive workhorse while the Orchestrator can route bounded work down to Haiku or escalate narrow, load-bearing nodes to Opus or frontier models when the runtime exposes those controls and the expected benefit justifies the cost.
+Use it with the Claude Sonnet family when you want a standalone Orchestrator calibrated for Anthropic's efficiency-to-capability trade-offs. Its primary routing strategy is **Sonnet-first and effort-first**: substantive work normally stays on Sonnet, and the Orchestrator raises or lowers supported Sonnet effort before changing models when reasoning depth is the bottleneck.
+
+Haiku is used as a specialized economical offload for mechanical or cheaply verified work rather than as the first reasoning tier. Opus is reserved for narrow advisor/escalation roles when Sonnet with appropriate effort is insufficient or the cost of failure justifies the premium. Frontier models remain exceptional last-resort paths.
 
 The release name is intentionally **Sonnet**, not tied to a specific model version. The routing policy can track the current stable Claude Sonnet generation without changing the Skill's public identity every time Anthropic updates the model family.
 
