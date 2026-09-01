@@ -4,182 +4,179 @@
 
 MinMax Orchestrator is a control plane for agentic work.
 
-It does not try to make an agent "think harder" by default. It decides how a task should be planned, when work should be delegated, what evidence counts as progress, when a plan should change, and when the agent should stop.
+It helps an AI agent decide how a task should be planned, when work should be delegated, what evidence counts as progress, when a plan needs to change, and when the work is actually done.
 
-The project is maintained as a family of standalone Skills. `NEXT` is the architectural upstream. Model-specific versions inherit that architecture and can diverge only where the model itself justifies a different orchestration strategy.
+Instead of adding more agents or more reasoning by default, it tries to use the smallest amount of orchestration that can reliably complete the job.
 
-## Why this exists
+## Why use an orchestrator?
 
-Agentic systems tend to fail in predictable ways: they over-plan simple work, delegate without a real benefit, keep iterating after progress has stopped, confuse activity with evidence, or let a worker quietly redefine the task.
+Agentic workflows are easy to make complicated and surprisingly hard to make reliable.
 
-MinMax Orchestrator turns those choices into an explicit operating system for the workflow.
+An agent can over-plan a simple task, split work that should stay together, keep iterating after progress has stopped, trust its own output too easily, or continue down a plan that stopped making sense several steps ago.
+
+MinMax Orchestrator manages those decisions explicitly.
 
 A substantive task can follow a path like this:
 
 ```text
 user intent
     ↓
-task model
+understand the task
     ↓
-feasibility & affordance check
+check constraints and available capabilities
     ↓
-planning regime
+choose how to plan
     ↓
-execution topology
+choose how to execute
     ↓
-plan
-    ↓
-execute
+act
     ↓
 verify
     ↓
 adapt, replan or stop
 ```
 
-The exact path is not fixed. A deterministic task should stay simple. A partially observable task may need local replanning. A formal planning problem may be better handed to a solver. The orchestrator chooses the minimum structure that still gives the task a credible path to completion.
+The path changes with the task. Straightforward work stays straightforward. Tasks that depend on new observations can adapt as evidence arrives. Problems with reliable external solvers or verifiers can use them instead of relying on free-form model reasoning.
 
-## What it controls
+## What it can manage
 
-When the runtime exposes the required capabilities, the orchestrator can govern:
+When the runtime provides the necessary capabilities, MinMax Orchestrator can manage:
 
 - task decomposition and dependency ordering;
-- planning regime selection;
+- planning depth and planning strategy;
 - delegation and worker boundaries;
-- planner, worker and verifier contracts;
-- tool-use assumptions and feasibility checks;
-- local repair versus global replanning;
-- iteration budgets and no-progress exits;
-- approval boundaries for Loop Mode;
-- terminal verification and final synthesis.
+- planner, worker and verifier roles;
+- tool and capability checks before execution;
+- parallel work when it provides a real benefit;
+- local repairs and larger replans;
+- retry, iteration and no-progress limits;
+- user approval boundaries;
+- verification and evidence gathering;
+- final synthesis of the work.
 
-The Skill is not the runtime. It cannot create parallel workers, persistent state, model routing, cancellation, or tool permissions where the host does not provide them. It defines how to use those capabilities when they exist.
+The orchestrator does not invent capabilities the host environment does not have. If a runtime cannot create parallel workers, switch models, persist state or use a particular tool, the Skill cannot make those capabilities appear. It controls how available capabilities are used.
 
-## Planning regimes
+## Planning that fits the task
 
-The current planning engine separates the way a plan evolves from the way work is distributed.
+Different tasks need different kinds of planning. MinMax Orchestrator selects among several planning regimes instead of applying one workflow to everything.
 
-It supports five primary regimes:
-
-| Regime | Best fit |
+| Planning regime | Useful when |
 | --- | --- |
-| `fixed_sequential` | Known ordered steps with stable state and deterministic completion |
-| `hierarchical_adaptive` | Stable high-level plan with local decisions that depend on new evidence |
-| `reactive_stepwise` | Partial observability or environments where every action changes what can happen next |
-| `deliberative_search` | Real branching, backtracking and candidate comparison |
-| `solver_assisted` | Problems that can be formalized and checked by an external solver or verifier |
+| `fixed_sequential` | The steps are known, ordered and easy to verify |
+| `hierarchical_adaptive` | The high-level plan is stable, but local decisions depend on evidence gathered during execution |
+| `reactive_stepwise` | Each action reveals or changes information needed for the next action |
+| `deliberative_search` | Several meaningful paths need to be compared, expanded or abandoned |
+| `solver_assisted` | A solver, compiler, test system or other external verifier can handle the load-bearing reasoning more reliably |
 
-Planning regime and execution topology are separate decisions. A hierarchical plan, for example, may still run as a single adaptive loop or use bounded workers if there is a concrete reason to delegate.
+The goal is not to choose the most sophisticated regime. It is to choose the simplest one that still fits the problem.
 
 ## Loop Mode
 
-Loop Mode is opt-in.
+Loop Mode is for work that genuinely benefits from iteration.
 
-Writing a useful loop is harder than telling an agent to "keep iterating until it is good". A loop needs a clear objective, a bounded scope, evidence that can distinguish progress from activity, sensible retry and cost limits, explicit decision boundaries, and a reliable way to know when to repair, replan or stop. Getting those pieces right is one of the hardest parts of agentic work, and many users should not have to design that control logic by hand every time.
+Writing a good loop is harder than telling an agent to "keep iterating until it is good." A useful loop needs a clear objective, bounded scope, evidence that separates progress from activity, sensible retry and cost limits, decision boundaries, and a reliable rule for when to repair, replan or stop.
 
-MinMax Orchestrator handles that work. From the user's intent, it architects the loop, writes the contract, chooses the planning regime and execution topology, defines what counts as progress and PASS, sets budgets and exit conditions, establishes verification and approval boundaries, and manages the loop as execution unfolds.
+Many people know what result they want but do not want to manually architect that control flow, write a detailed loop contract, choose the right agent topology, define verification gates, or manage every iteration themselves.
 
-When a user explicitly asks the orchestrator to execute a task iteratively, it first produces a human-readable contract that freezes the outcome, boundaries, budget, verification strategy and exit conditions. Execution starts only after approval.
+MinMax Orchestrator handles that layer. From the user's intent, it can:
 
-A loop is expected to make measurable progress. More reasoning by itself does not count.
+- architect the loop;
+- write a human-readable execution contract;
+- choose the planning regime and execution topology;
+- define what counts as progress and what counts as PASS;
+- set retry, iteration and no-progress limits;
+- define evidence and verification requirements;
+- establish which decisions the agent can make and which return to the user;
+- manage repairs, replans and stopping conditions as the work evolves.
+
+When Loop Mode is requested, the orchestrator first presents the proposed contract. Execution begins only after the user approves it.
+
+A typical loop behaves like this:
 
 ```text
-observe
-  ↓
-identify a verified gap
-  ↓
+observe current state
+        ↓
+find a verified gap
+        ↓
 choose the smallest useful action
-  ↓
-act
-  ↓
-verify
-  ↓
-update state
-  ↓
+        ↓
+execute
+        ↓
+verify the result
+        ↓
+update the known state
+        ↓
 continue only if another actionable gap remains
 ```
 
-Repeated failure with the same strategy is treated as no progress. Terminal success should come from deterministic tests, authoritative state, receipts or an independent verifier whenever those are available.
+A loop is expected to make measurable progress. More reasoning, more messages or more iterations do not count by themselves. Repeating the same failed strategy is treated as no progress.
 
-## Distributions
+## Verification is part of the work
+
+The orchestrator does not treat the agent's confidence as proof that a task succeeded.
+
+It tries to match the evidence to the kind of claim being verified:
+
+```text
+code or deterministic output  → tests, schemas, compilers or assertions
+system state                  → authoritative read-back
+external action               → receipt and authoritative state when available
+claim about the outside world → authoritative or tool-grounded external evidence
+qualitative judgment          → independent review or an explicit rubric
+```
+
+If a load-bearing claim depends on facts outside the current environment, the orchestrator should obtain appropriate external evidence when that evidence is reasonably available. The model's memory, the executor's own report or another round of self-critique should not substitute for a source that can actually verify the claim.
+
+If suitable evidence cannot be obtained, the result should be narrowed or reported with the remaining uncertainty instead of being promoted to PASS without support.
+
+## NEXT and Luna
+
+The repository currently provides two versions.
 
 ### MinMax Orchestrator NEXT
 
-`minmax-orchestrator-next/` is the main architectural upstream.
+Use NEXT when you want the main, continuously evolving MinMax Orchestrator architecture.
 
-New planning rules, verification mechanisms, Loop Mode changes, safety controls and research-backed orchestration ideas land here first. NEXT is where the architecture evolves.
+It receives new planning, verification, Loop Mode and orchestration improvements first.
 
 ### MinMax Orchestrator Luna
 
-`minmax-orchestrator-luna/` is the first model-specific distribution.
+Use Luna when you are working with the Luna model and want the model-specific distribution.
 
-It is a standalone Skill. It does not require NEXT, Agent Memory, a persistent profile, or repository-level support files at runtime.
+Luna is standalone. You do not need NEXT installed alongside it, and you do not need a persistent profile or memory setting to keep it in Luna mode. The Skill itself is the Luna version.
 
-At the moment, Luna is behaviorally aligned with NEXT. Its initial differences are identity and model-specific naming. Future Luna-specific behavior must be justified by observed Luna behavior or evaluation evidence and recorded in `shared/luna-deltas.md`.
+At the moment, Luna follows the same behavioral baseline as NEXT. Model-specific behavior can diverge when there is evidence that Luna benefits from different orchestration choices.
 
-This lets the project optimize for a model without turning every model version into an unrelated fork.
+## What the orchestrator will not do
 
-## Repository model
+MinMax Orchestrator is deliberately conservative about adding complexity.
 
-```text
-minmax-orchestrator/
-├── minmax-orchestrator-next/      # architectural upstream
-├── minmax-orchestrator-luna/      # standalone Luna distribution
-├── variants/
-│   └── luna/                      # Luna-specific source metadata/deltas
-├── shared/
-│   ├── model-variant-policy.md
-│   └── luna-deltas.md
-├── tools/
-│   ├── materialize_luna.py
-│   └── validate_all.py
-└── .github/workflows/
-    ├── validate.yml
-    └── sync-luna.yml
-```
+It should not:
 
-`variants/` and `shared/` are repository-maintenance surfaces. Packaged orchestrators do not depend on them.
+- create multiple workers just because a task is important;
+- use a loop when direct execution is sufficient;
+- keep retrying without evidence of useful progress;
+- let a worker redefine the user's objective;
+- claim tools, models, parallelism or verification that did not actually run;
+- treat self-critique as strong evidence when a better verifier exists;
+- make a material user-owned decision without returning that decision to the user;
+- continue past explicit approval or safety boundaries.
 
-## Keeping Luna in sync
-
-Luna is materialized from NEXT plus its declared model-specific deltas:
-
-```bash
-python tools/materialize_luna.py
-python tools/validate_all.py
-```
-
-The GitHub sync workflow runs the same process when NEXT or the Luna variant source changes. It validates both distributions before committing the regenerated Luna snapshot.
-
-This makes drift visible. A difference between Luna and NEXT should exist because it was declared, not because somebody forgot to copy a file six months ago.
-
-## Validation
-
-Run the complete repository check with:
-
-```bash
-python tools/validate_all.py
-```
-
-Each distribution runs its own pytest suite. Validation fails if a distribution is missing, zero tests are collected, or any test fails.
-
-The current suites cover the planning contract, Loop Mode, approval binding, checkpoint behavior, interaction rules, side-effect boundaries, plan validation and adversarial cases. Runtime-specific stochastic benchmarks remain a separate layer of evidence and should not be confused with deterministic structural tests.
-
-## Design principles
-
-A few rules carry most of the architecture:
+## Core principles
 
 1. Keep simple work simple.
-2. Choose a planning regime before adding orchestration complexity.
+2. Choose the planning method before adding execution complexity.
 3. Delegate only when delegation has a concrete benefit.
-4. Treat objective, constraints and approvals as root-owned state.
-5. Prefer deterministic or authoritative verification over another round of model judgment.
-6. Repair the smallest failed component before rebuilding the whole plan.
-7. Stop when there is no verified, actionable gap left to close.
-8. Never claim a capability the runtime did not actually provide.
+4. Preserve the user's objective, constraints and decision rights.
+5. Match evidence to the truth being claimed.
+6. Prefer direct verification over another round of model judgment.
+7. Repair the smallest failed part before rebuilding the whole plan.
+8. Stop when there is no verified, actionable gap left to close.
+9. Never claim a capability the runtime did not provide.
 
 ## Status
 
-NEXT and Luna are structurally hardened and covered by deterministic/adversarial test suites. The project deliberately does not label that evidence as proof of universal runtime reliability. Model-specific stochastic evaluation is the next layer required before stronger production claims are justified.
+MinMax Orchestrator includes deterministic and adversarial validation for its orchestration rules. That does not mean every model, runtime and tool combination is guaranteed to behave identically. Real-world reliability still depends on the capabilities exposed by the host environment and the behavior of the model running the Skill.
 
 ## Author
 
