@@ -1,0 +1,9 @@
+{
+  "skill_name": "minmax-orchestrator-sonnet-5",
+  "display_name": "MinMax Orchestrator Sonnet 5",
+  "stable_base_skill_name": "minmax-orchestrator-luna",
+  "stable_base_display_name": "MinMax Orchestrator Luna",
+  "primary_model": "claude-sonnet-5",
+  "release_channel": "stable",
+  "runtime_independent": true
+}
