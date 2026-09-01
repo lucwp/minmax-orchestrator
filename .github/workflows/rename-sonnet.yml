@@ -26,7 +26,6 @@ jobs:
           git mv minmax-orchestrator-sonnet-5 minmax-orchestrator-sonnet
           git mv variants/sonnet-5 variants/sonnet
           git mv tools/materialize_sonnet_5.py tools/materialize_sonnet.py
-          git mv .github/workflows/promote-sonnet-5.yml .github/workflows/promote-sonnet.yml
           python - <<'PY'
           from pathlib import Path
           import json
@@ -68,16 +67,6 @@ jobs:
                   ('Claude Sonnet 5-specific workspace-level manager/orchestrator', 'Claude Sonnet-specific workspace-level manager/orchestrator'),
                   ('Sonnet 5 identity was not materialized', 'Sonnet identity was not materialized'),
                   ('materialized Sonnet 5 from stable Luna baseline plus Anthropic deltas', 'materialized Sonnet from stable Luna baseline plus Anthropic deltas'),
-              ],
-              Path('.github/workflows/promote-sonnet.yml'): [
-                  ('Promote Sonnet 5 stable release', 'Promote Sonnet stable release'),
-                  ('promote-sonnet-5.yml', 'promote-sonnet.yml'),
-                  ('Materialize stable Sonnet 5', 'Materialize stable Sonnet'),
-                  ('materialize_sonnet_5.py', 'materialize_sonnet.py'),
-                  ('Validate Sonnet 5', 'Validate Sonnet'),
-                  ('minmax-orchestrator-sonnet-5', 'minmax-orchestrator-sonnet'),
-                  ('Sonnet 5 release already materialized.', 'Sonnet release already materialized.'),
-                  ('Add stable Sonnet 5 orchestrator release', 'Add stable Sonnet orchestrator release'),
               ],
               Path('tools/validate_all.py'): [
                   ('minmax-orchestrator-sonnet-5', 'minmax-orchestrator-sonnet'),
@@ -158,11 +147,10 @@ jobs:
           test -f AGENTS.md
       - name: Clean and commit migration
         run: |
-          find minmax-orchestrator-sonnet -type d -name '__pycache__' -prune -exec rm -rf {} +
-          find minmax-orchestrator-sonnet -type d -name '.pytest_cache' -prune -exec rm -rf {} +
-          rm .github/workflows/rename-sonnet.yml
+          find minmax-orchestrator-next minmax-orchestrator-luna minmax-orchestrator-sonnet -type d -name '__pycache__' -prune -exec rm -rf {} +
+          find minmax-orchestrator-next minmax-orchestrator-luna minmax-orchestrator-sonnet -type d -name '.pytest_cache' -prune -exec rm -rf {} +
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
+          git add -A README.md AGENTS.md shared/model-variant-policy.md tools minmax-orchestrator-sonnet minmax-orchestrator-sonnet-5 variants/sonnet variants/sonnet-5
           git commit -m 'Rename stable Sonnet orchestrator release'
           git push
