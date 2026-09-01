@@ -10,18 +10,35 @@ def test_sonnet_identity():
     assert "MinMax Orchestrator Luna" not in text
 
 
-def test_anthropic_ladder_is_explicit():
+def test_anthropic_models_are_explicit():
     text = (ROOT / "references" / "model-routing.md").read_text(encoding="utf-8")
     for model in ["claude-haiku-4-5", "claude-sonnet-5", "claude-opus-5", "claude-fable-5"]:
         assert model in text
-    assert "Claude Mythos 5 is not part of the normal ladder" in text
+    assert "Claude Mythos 5 is not part of the normal routing policy" in text
 
 
-def test_sonnet_is_default_and_frontier_is_rare():
+def test_sonnet_effort_is_primary_ladder():
     text = (ROOT / "references" / "model-routing.md").read_text(encoding="utf-8")
-    assert "default root/workhorse" in text
-    assert "Fable is the frontier tier, not the default premium tier" in text
-    assert "Prefer escalating one load-bearing node" in text
+    assert "Sonnet-first, effort-first, model-switch-last" in text
+    assert "Sonnet effort is the primary ladder" in text
+    assert "Sonnet low effort" in text
+    assert "Sonnet max effort" in text
+    assert "lowest Sonnet effort that is likely to complete the node reliably" in text
+
+
+def test_haiku_is_offload_not_reasoning_rung():
+    text = (ROOT / "references" / "model-routing.md").read_text(encoding="utf-8")
+    assert "Haiku is a specialized offload path" in text
+    assert "not the first reasoning rung" in text
+    assert "keep the work on Sonnet" in text
+
+
+def test_opus_and_fable_are_narrow_escalations():
+    text = (ROOT / "references" / "model-routing.md").read_text(encoding="utf-8")
+    assert "prefer an Opus advisor before replacing Sonnet as the executor" in text
+    assert "Move a node to Opus execution only when" in text
+    assert "Fable is a last-resort frontier path" in text
+    assert "Prefer a narrow Fable consultation or isolated load-bearing node" in text
 
 
 def test_anthropic_thinking_controls_are_safe():

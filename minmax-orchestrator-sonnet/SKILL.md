@@ -161,16 +161,16 @@ Loop approval does not waive a separate approval required by domain policy or si
 
 ## Model routing summary
 
-Use Claude Sonnet 5 as the default substantive/root model and allocate higher or lower Anthropic capability only where marginal value exceeds marginal cost. Load `references/model-routing.md` for the current stable routing policy.
+Use a **Sonnet-first, effort-first, model-switch-last** policy. Keep Claude Sonnet as the default substantive/root model and use supported `effort` levels inside Sonnet as the primary capability ladder. Load `references/model-routing.md` for the current stable routing policy.
 
-Default Anthropic ladder:
-- **Claude Haiku 4.5** for trivial, mechanical, high-volume, low-latency, or cheaply verified bounded work;
-- **Claude Sonnet 5** for normal substantive execution, planning, tool use, coding, research, and most agentic loops;
-- **Claude Opus 5** for narrow hard planning/reasoning, difficult root-cause work, ambiguous integration, or high-cost failure where stronger capability is likely to pay for itself;
-- **Claude Fable 5** only for frontier-level, unusually difficult, long-horizon, or high-consequence nodes where Opus 5 is insufficient and the expected gain justifies the extra cost;
+Default Anthropic policy:
+- **Claude Sonnet 5** stays root/workhorse for substantive execution, planning, tool use, coding, research, synthesis, and most agentic loops; choose the lowest supported Sonnet effort likely to complete the node reliably;
+- **Claude Haiku 4.5** is a specialized economical offload for mechanical, high-volume, low-latency, or cheaply verified bounded work, not the first reasoning rung;
+- **Claude Opus 5** is a narrow advisor/escalation for load-bearing reasoning or judgment when Sonnet plus appropriate effort is insufficient or the expected failure reduction justifies the premium;
+- **Claude Fable 5** is a last-resort frontier path for exceptional nodes where Opus is insufficient and the expected lift justifies the added cost;
 - **Claude Mythos 5** is never a required dependency or normal routing tier because general access is restricted.
 
-Use supported `effort` settings as an intra-model cost/performance throttle before escalating the whole workflow when the failure class is reasoning depth rather than missing capability. If Anthropic's Advisor tool is exposed, prefer a narrow Opus/Fable consultation over upgrading the entire executor when that is cheaper and sufficient.
+Before switching models, repair context/scope/tool/verification problems and raise supported Sonnet effort when reasoning depth is the likely bottleneck. If Anthropic's Advisor tool is exposed, prefer a narrow Opus/Fable consultation over replacing the Sonnet executor when that is cheaper and sufficient.
 
 Do not claim model routing, effort control, Advisor use, or model switching occurred when the runtime does not expose those controls.
 
