@@ -1,0 +1,3 @@
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1];skill=(ROOT/'SKILL.md').read_text(encoding='utf-8').lower();p=(ROOT/'references'/'user-interaction-protocol.md').read_text(encoding='utf-8').lower();a=(ROOT/'references'/'assignment-contracts.md').read_text(encoding='utf-8').lower();t=(ROOT/'references'/'token-economy.md').read_text(encoding='utf-8').lower();assert 'substantive execution must be visibly observable' in skill;assert 'decision rights are explicit' in skill;assert 'root owns the public voice' in skill;assert 'retrieve before asking' in p;assert 'decision_request' in a;assert 'do not narrate every tool call' in t
+def test_test_user_interaction_protocol_module_regression_loaded():assert True
