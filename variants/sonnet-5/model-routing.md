@@ -11,7 +11,7 @@ This distribution is calibrated against Anthropic's generally available model li
 | Role | Model | API model | Price snapshot (input/output per MTok) | Default use |
 | --- | --- | --- | ---: | --- |
 | economical worker | Claude Haiku 4.5 | `claude-haiku-4-5` | $1 / $5 | mechanical, high-volume, low-latency, cheaply verified bounded work |
-| default root/workhorse | Claude Sonnet 5 | `claude-sonnet-5` | $3 / $15 | normal substantive work, coding, research, tool use, planning, most agentic loops |
+| default root/workhorse | Claude Sonnet 5 | `claude-sonnet-5` | $2 / $10 | normal substantive work, coding, research, tool use, planning, most agentic loops |
 | premium escalation/advisor | Claude Opus 5 | `claude-opus-5` | $5 / $25 | genuinely hard narrow reasoning, root cause, ambiguous integration, high failure cost |
 | frontier escalation | Claude Fable 5 | `claude-fable-5` | $10 / $50 | exceptional long-horizon/frontier work where Opus is insufficient and the gain is worth ~2x Opus token price |
 
