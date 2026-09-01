@@ -31,9 +31,6 @@ jobs:
           from pathlib import Path
           import json
 
-          root = Path('.')
-
-          # Distribution identity: rename the Skill, not the underlying Anthropic model IDs.
           replacements_by_file = {
               Path('minmax-orchestrator-sonnet/SKILL.md'): [
                   ('name: minmax-orchestrator-sonnet-5', 'name: minmax-orchestrator-sonnet'),
@@ -91,60 +88,56 @@ jobs:
           identity = json.loads(identity_path.read_text(encoding='utf-8'))
           identity['skill_name'] = 'minmax-orchestrator-sonnet'
           identity['display_name'] = 'MinMax Orchestrator Sonnet'
-          # Keep primary_model pinned to the current Anthropic model ID.
           identity_path.write_text(json.dumps(identity, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
 
-          # Public README: keep it client-facing and expose stable Sonnet as a release family name.
           readme = Path('README.md')
           text = readme.read_text(encoding='utf-8')
           start = text.index('### MinMax Orchestrator Luna')
           end = text.index('## What the orchestrator will not do')
-          replacement = '''### MinMax Orchestrator Luna
+          lines = [
+              '### MinMax Orchestrator Luna', '',
+              'Luna is a stable model-specific release.', '',
+              'Use it when running the Luna model and you want the stable, standalone MinMax Orchestrator distribution. Installing or invoking Orchestrator Luna is enough to select that version; it does not require NEXT to be installed alongside it.', '',
+              'As model-specific behavior is validated, Luna can diverge from NEXT where a different orchestration choice produces a better result for Luna.', '',
+              '### MinMax Orchestrator Sonnet', '',
+              'Sonnet is the stable Anthropic release.', '',
+              "Use it with the Claude Sonnet family when you want a standalone Orchestrator calibrated for Anthropic's efficiency-to-capability trade-offs. Sonnet remains the default substantive workhorse while the Orchestrator can route bounded work down to Haiku or escalate narrow, load-bearing nodes to Opus or frontier models when the runtime exposes those controls and the expected benefit justifies the cost.", '',
+              'The release name is intentionally **Sonnet**, not tied to a specific model version. The routing policy can track the current stable Claude Sonnet generation without changing the Skill\'s public identity every time Anthropic updates the model family.', '',
+              'Like every model-specific release, Orchestrator Sonnet is self-contained at runtime and does not require NEXT, Luna, persistent memory, a profile switch, or repository support files.', '',
+              '```text',
+              '                    MinMax Orchestrator NEXT',
+              '                    experimental laboratory',
+              '                              ↓',
+              '                 validated model-specific promotion',
+              '                         ↙             ↘',
+              '       MinMax Orchestrator Luna     MinMax Orchestrator Sonnet',
+              '       stable standalone release    stable standalone release',
+              '```', '',
+              'Future model-specific distributions follow the same separation: experimentation happens in NEXT; stable, dependency-free releases are named for the model family they are designed to orchestrate.', '',
+          ]
+          readme.write_text(text[:start] + '\n'.join(lines) + '\n' + text[end:], encoding='utf-8')
 
-Luna is a stable model-specific release.
-
-Use it when running the Luna model and you want the stable, standalone MinMax Orchestrator distribution. Installing or invoking Orchestrator Luna is enough to select that version; it does not require NEXT to be installed alongside it.
-
-As model-specific behavior is validated, Luna can diverge from NEXT where a different orchestration choice produces a better result for Luna.
-
-### MinMax Orchestrator Sonnet
-
-Sonnet is the stable Anthropic release.
-
-Use it with the Claude Sonnet family when you want a standalone Orchestrator calibrated for Anthropic's efficiency-to-capability trade-offs. Sonnet remains the default substantive workhorse while the Orchestrator can route bounded work down to Haiku or escalate narrow, load-bearing nodes to Opus or frontier models when the runtime exposes those controls and the expected benefit justifies the cost.
-
-The release name is intentionally **Sonnet**, not tied to a specific model version. The routing policy can track the current stable Claude Sonnet generation without changing the Skill's public identity every time Anthropic updates the model family.
-
-Like every model-specific release, Orchestrator Sonnet is self-contained at runtime and does not require NEXT, Luna, persistent memory, a profile switch, or repository support files.
-
-```text
-                    MinMax Orchestrator NEXT
-                    experimental laboratory
-                              ↓
-                 validated model-specific promotion
-                         ↙             ↘
-       MinMax Orchestrator Luna     MinMax Orchestrator Sonnet
-       stable standalone release    stable standalone release
-```
-
-Future model-specific distributions follow the same separation: experimentation happens in NEXT; stable, dependency-free releases are named for the model family they are designed to orchestrate.
-
-'''
-          readme.write_text(text[:start] + replacement + text[end:], encoding='utf-8')
-
-          # Permanent maintenance rule. README stays client-facing; this file carries repo-maintenance policy.
-          Path('AGENTS.md').write_text('''# Repository Maintenance Rules\n\n## README synchronization is mandatory\n\nEvery repository update must include an explicit README review before it is considered complete.\n\nWhen a change affects public behavior, model support, release names, stable distributions, usage, compatibility, installation, capabilities, limitations, or project status, update `README.md` in the same change. Do not merge or publish a user-visible repository change with a stale README.\n\nFor maintenance-only changes with no user-visible effect, still verify that the README remains accurate. The README must remain fully client-facing: document only what a user needs to understand, choose, install, or use the project; do not expose private environment details, internal conversation context, temporary migration mechanics, or maintainer-only implementation history.\n''', encoding='utf-8')
+          agents_lines = [
+              '# Repository Maintenance Rules', '',
+              '## README synchronization is mandatory', '',
+              'Every repository update must include an explicit README review before it is considered complete.', '',
+              'When a change affects public behavior, model support, release names, stable distributions, usage, compatibility, installation, capabilities, limitations, or project status, update `README.md` in the same change. Do not merge or publish a user-visible repository change with a stale README.', '',
+              'For maintenance-only changes with no user-visible effect, still verify that the README remains accurate. The README must remain fully client-facing: document only what a user needs to understand, choose, install, or use the project; do not expose private environment details, internal conversation context, temporary migration mechanics, or maintainer-only implementation history.', '',
+          ]
+          Path('AGENTS.md').write_text('\n'.join(agents_lines), encoding='utf-8')
 
           policy = Path('shared/model-variant-policy.md')
           ptext = policy.read_text(encoding='utf-8')
-          marker = '## README synchronization\n'
-          if marker not in ptext:
-              ptext += '''\n## README synchronization\n\nEvery repository change requires a README accuracy review. Any change that affects user-visible behavior, supported models, release identity, compatibility, usage, capabilities, limitations, or status must update the root `README.md` in the same change. The README remains client-facing and must not contain private environment or maintainer-only operational context.\n'''
-          policy.write_text(ptext, encoding='utf-8')
+          if '## README synchronization' not in ptext:
+              extra = [
+                  '', '## README synchronization', '',
+                  'Every repository change requires a README accuracy review. Any change that affects user-visible behavior, supported models, release identity, compatibility, usage, capabilities, limitations, or status must update the root `README.md` in the same change. The README remains client-facing and must not contain private environment or maintainer-only operational context.', '',
+              ]
+              policy.write_text(ptext + '\n'.join(extra), encoding='utf-8')
           PY
       - name: Verify no stale release identity
         run: |
-          if grep -R -n --exclude-dir=.git -E 'minmax-orchestrator-sonnet-5|MinMax Orchestrator Sonnet 5|variants/sonnet-5|materialize_sonnet_5|promote-sonnet-5' .; then
+          if grep -R -n --exclude-dir=.git --exclude=rename-sonnet.yml -E 'minmax-orchestrator-sonnet-5|MinMax Orchestrator Sonnet 5|variants/sonnet-5|materialize_sonnet_5|promote-sonnet-5' .; then
             echo 'FAIL: stale Sonnet 5 release identity remains.' >&2
             exit 1
           fi
