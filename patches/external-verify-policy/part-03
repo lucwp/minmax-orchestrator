@@ -1,0 +1,70 @@
++      ],
++      "limitations": []
++    }
++  ]
++}
++```
++
++The validator is a policy guard, not a fact checker. It checks that the declared evidence class is appropriate and that external claims do not pass on self-report alone. The underlying source still has to be inspected and judged for relevance, authority, freshness, and scope.
++
++## Source rationale
++
++This policy is consistent with evidence from the LLM self-correction literature: reliable external feedback is materially more dependable than unsupported intrinsic self-correction for general tasks, and tool-grounded critique can improve correction quality. The policy does not claim that every external source is correct or that external verification is always required; it requires evidence-source matching.
+diff --git a/minmax-orchestrator-next/reliability.json b/minmax-orchestrator-next/reliability.json
+index fda285c..687de22 100644
+--- a/minmax-orchestrator-next/reliability.json
++++ b/minmax-orchestrator-next/reliability.json
+@@ -218,6 +218,17 @@
+         "evals/planning/README.md",
+         "evals/planning/benchmark-manifest.json"
+       ]
++    },
++    "claim_evidence_matching": {
++      "status": "implemented",
++      "evidence": [
++        "SKILL.md",
++        "references/verification-evidence.md",
++        "references/assignment-contracts.md",
++        "references/loop-mode.md",
++        "scripts/validate_evidence_plan.py",
++        "tests/test_external_evidence_verification.py"
++      ]
+     }
+   },
+   "tests": [
+@@ -239,7 +250,8 @@
+     "tests/test_plan_spec.py",
+     "tests/test_planning_evals.py",
+     "tests/test_planning_observation_grader.py",
+-    "tests/test_planning_integration.py"
++    "tests/test_planning_integration.py",
++    "tests/test_external_evidence_verification.py"
+   ],
+   "limitations": [
+     "The skill cannot provide cancellation, transactionality, locking, signatures, or idempotency when the runtime/target does not expose those primitives.",
+diff --git a/minmax-orchestrator-next/scripts/validate_evidence_plan.py b/minmax-orchestrator-next/scripts/validate_evidence_plan.py
+new file mode 100755
+index 0000000..ccb3188
+--- /dev/null
++++ b/minmax-orchestrator-next/scripts/validate_evidence_plan.py
+@@ -0,0 +1,128 @@
++#!/usr/bin/env python3
++import argparse
++import json
++from pathlib import Path
++
++TRUTH_DOMAINS = {
++    "deterministic_result",
++    "authoritative_state",
++    "transaction",
++    "external_world",
++    "semantic_judgment",
++}
++EVIDENCE_TYPES = {
++    "deterministic_test",
++    "authoritative_state",
++    "transaction_receipt",
++    "authoritative_external",
++    "tool_grounded_external",
++    "independent_reviewer",
++    "bounded_semantic_judgment",
