@@ -25,9 +25,32 @@ jobs:
       - name: Assemble and preflight patch
         run: |
           cat patches/external-verify-policy/part-* > /tmp/external-verify-policy.patch
-          git apply --check /tmp/external-verify-policy.patch
+          git apply --check --exclude=minmax-orchestrator-next/reliability.json /tmp/external-verify-policy.patch
       - name: Apply policy to NEXT
-        run: git apply /tmp/external-verify-policy.patch
+        run: |
+          git apply --exclude=minmax-orchestrator-next/reliability.json /tmp/external-verify-policy.patch
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('minmax-orchestrator-next/reliability.json')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          d.setdefault('controls', {})['claim_evidence_matching'] = {
+              'status': 'implemented',
+              'evidence': [
+                  'SKILL.md',
+                  'references/verification-evidence.md',
+                  'references/assignment-contracts.md',
+                  'references/loop-mode.md',
+                  'scripts/validate_evidence_plan.py',
+                  'tests/test_external_evidence_verification.py'
+              ]
+          }
+          tests = d.setdefault('tests', [])
+          test = 'tests/test_external_evidence_verification.py'
+          if test not in tests:
+              tests.append(test)
+          p.write_text(json.dumps(d, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+          PY
       - name: Materialize Luna
         run: python tools/materialize_luna.py
       - name: Validate NEXT and Luna
